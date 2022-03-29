@@ -1,4 +1,9 @@
-import { StyleSheet, } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
+// constants
+export const windowWidth = Dimensions.get('window').width;
+export const windowHeight = Dimensions.get('window').height;
 
 
 export const Styles = StyleSheet.create({
@@ -49,13 +54,7 @@ export const Styles = StyleSheet.create({
         borderRadius: 8,
         borderColor: '#000',
     },
-    row: {
-        flex: 1,
-        flexDirection: 'row',
-        backgroundColor: 'red',
-        justifyContent: "flex-start",
-        alignItems: 'center',
-    },
+
     modalContainer: {
         backgroundColor: 'rgba(0,0,0,0.5)',
         flex: 1,
@@ -108,6 +107,72 @@ export const Styles = StyleSheet.create({
         alignSelf: 'center',
         justifyContent: 'center'
     },
+    tileBox: {
+
+        height: wp('100%'),
+
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+
+        boxShadow: '0px 3px 16px rgba(0, 0, 0, 0.18)',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 8,
+
+        elevation: 100,
+    },
+    tileInnerContainer: {
+
+        flex: 1,
+        height: wp('33%'),
+        backgroundColor: '#FFFFFF',
+        borderRadius: 10,
+        padding: 10,
+    },
+    tag: {
+
+        fontSize: hp('1.5%'),
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: 'orange',
+        color: 'orange',
+        borderRadius: 8,
+        marginRight: 10,
+        padding: 7,
+        textTransform: 'capitalize'
+    },
+    title: {
+        fontSize: hp('3%'),
+        fontWeight: 'bold',
+        textTransform: 'capitalize',
+        marginTop: 10
+    },
+    price: {
+        fontSize: hp('2%'),
+        fontWeight: 'bold',
+        textTransform: 'capitalize',
+        marginTop: 10
+    },
+    priceL: {
+        fontSize: hp('3%'),
+        fontWeight: 'bold',
+        textTransform: 'capitalize',
+        marginTop: 10
+    },
+    search: {
+
+        color: 'orange',
+        padding: 10,
+        marginTop: 30,
+        marginBottom: 40,
+        fontWeight: 'bold',
+        fontSize: hp('2%'),
+        backgroundColor:'#F5F5F5',
+        borderRadius: 20,
+    },
 
     // input field
     lableStyle: {
@@ -158,5 +223,75 @@ export const Styles = StyleSheet.create({
     },
     margin20: {
         height: 20,
+    },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        padding: 20,
+    },
+    container10: {
+        flex: 1,
+        backgroundColor: '#fff',
+        padding: 10,
+    },
+    textWrapper: {
+        height: hp('85%'),
+        // width: wp('100%'),
+    },
+    fontLN: {
+        fontSize: hp('2%'),
+        color: '#000',
+        textTransform: 'capitalize'
+    },
+    fontLB: {
+        fontSize: hp('5%'),
+        fontWeight: 'bold',
+        color: '#000',
+        textTransform: 'capitalize'
+    },
+    rowstart: {
+        flexDirection: 'row',
+        justifyContent: "flex-start",
+        alignItems: 'center',
+        marginTop: 20
+    },
+    row: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: 'space-between'
+    },
+    bottomBtn: {
+
+        width: wp('50%'),
+        height: 40,
+        marginTop: 30,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'orange',
+
+        borderRadius: 20
+    },
+    btnText: {
+        fontSize: hp('2%'),
+        color: '#fff',
+        fontWeight: 'bold',
+        textTransform: 'capitalize'
+    },
+    roundborder: {
+        borderRadius: 20,
+        overflow: 'hidden'
+    },
+    ImageContainer: {
+        backgroundColor: '#fff',
+        padding: 4,
+        marginRight: 10,
+        borderRadius: 20,
+        overflow: 'hidden'
+    },
+    imageStyle: {
+        width: hp('9%'),
+        height: hp('9%'),
+        borderRadius: 20
     }
 });

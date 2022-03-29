@@ -13,7 +13,10 @@ target 'testApp' do
   )
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
+  pod 'react-native-fbsdk-next', :path => '../node_modules/react-native-fbsdk-next'
+  pod 'FBSDKLoginKit'
 
+    
   target 'testAppTests' do
     inherit! :complete
     # Pods for testing

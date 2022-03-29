@@ -7,213 +7,125 @@ import {
     Text,
     FlatList,
     TouchableOpacity,
-    Modal
+    Modal,
+    ScrollView,
+    Image,
+    Dimensions,
+    ImageBackground
 } from "react-native";
+import Carousel from 'react-native-snap-carousel';
 
 // styles
-import { Styles } from '../CommonStyles/Style'
+import { Styles, windowWidth, windowHeight } from '../CommonStyles/Style'
 
 // components
-import RegistrationFrom from "./RegistrationFrom";
-
-// helpers
-import { addDataToFirebase, getAllUserDataFromFirebase } from '../Common/Firebase'
-
-import database from '@react-native-firebase/database';
-
-// create ref of the database
-const usersReference = database().ref('/users');
+import UserList from "./UserList";
+import InputField from '../Common/InputWithLabel'
 
 //---------- compoents
 
-const Home = (props) => {
+const Home = ({ navigation }) => {
 
     //---------- state and veriables
 
     //state
-    const [usersList, setUsersList] = React.useState([]);
-    const [selectedFilter, setSelectedFilter] = React.useState('');
-    const [filterList, setFilterList] = React.useState([]);
-    const [isShowForm, setIsShowForm] = React.useState(false);
-    const [isShowFilter, setIsShowFilter] = React.useState(false);
-    const [update, setUpdate] = React.useState(false);
+    const [data, setData] = React.useState({});
 
     //---------- life cyles
 
     React.useEffect(() => {
-        const onValueChange = usersReference.on('value', snapshot => {
-            const propertyNames = (snapshot.val() && Object.values(snapshot.val())) || []
 
-            console.log('-------------------------------=---------=-----')
-            console.log('propertyNames :', propertyNames)
-            console.log('selectedFilterselectedFilter : ', selectedFilter)
-            console.log('-------------------------------=---------=-----')
-
-            setUsersList(propertyNames)
-            handleFilter(propertyNames)
-            handleClicks('cancel')
-        });
-
-        // Stop listening for updates when no longer required
-        return () => usersReference.off('value', onValueChange);
     }, []);
-
-    // update of filter
-    React.useEffect(() => {
-
-        console.log('<><><><><><><><><><><><><><><><><<><> ')
-        console.log('selectedFilterselectedFilter : ', selectedFilter)
-        console.log('<><><><><><><><><><><><><><><><><<><> ')
-
-        handleFilter(usersList)
-    }, [selectedFilter]);
 
     //---------- helper: user's action
 
-    // handle all clicks in sigle function 
-    const handleClicks = (key, value) => {
+    // handle change in text field
+    const handleChange = (text, id) => {
 
-        switch (key) {
-
-            case 'register':
-                setIsShowForm(true);
-                break;
-
-            case 'add_in_firebase':
-                saveProfileToFirebase(value);
-                break;
-
-            case 'cancel':
-                setIsShowForm(false);
-                break;
-
-            case 'drop_down':
-                setIsShowFilter(true);
-                break;
-
-            case 'select_filter':
-                if (value.id === 'clear') {
-
-                    setSelectedFilter('');
-                    setFilterList([])
-                } else {
-
-                    setSelectedFilter(value.id);
-                }
-                setIsShowFilter(false);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    // create bar and qr code
-    const saveProfileToFirebase = (data) => {
-
-        addDataToFirebase(data)
-    }
-
-    // get selected filter
-    const getSelectedFilter = () => {
-
-        return selectedFilter || 'Category Filter'
-    }
-
-    // set filter lists
-    const handleFilter = (data) => {
-
-
-        console.log('================================')
-        console.log('getSelectedFilter() : ', getSelectedFilter())
-        console.log('================================')
-        if (selectedFilter) {
-
-            let filter_list = data.filter(x => (x.categories && x.categories.includes(getSelectedFilter())))
-            setFilterList(filter_list)
-        }
-        setUpdate(!update)
+        // set change value in state
+        setData({
+            ...data,
+            [id]: text
+        })
     }
 
     //---------- helper's : render
 
-    // all filters
-    const renderFiltersList = () => {
-
-        return category_data.map((item, index) => {
-            return (
-                <TouchableOpacity
-                    key={index}
-                    style={selectedFilter === item.id ? Styles.filterBlack : Styles.filter}
-                    onPress={() => {
-
-                        handleClicks('select_filter', item)
-                    }}
-                >
-                    <Text
-                        style={selectedFilter === item.id ? Styles.filterTextWhite : Styles.filterText}
-                    >
-                        {
-                            item.title
-                        }
-                    </Text>
-                </TouchableOpacity>
-            )
-        })
-    }
-
-    // all profiles view
-    const renderProfiles = ({ item, index }) => {
+    // render Carousel
+    const renderCarousel = () => {
 
         return (
-            <View
-                style={Styles.profileContainer}
-            >
-                {/* name */}
-                <Text
-                    style={Styles.name}
-                >
-                    {
-                        item.name
-                    }
-                </Text>
-
-                {/* age */}
-                <Text>
-                    {
-                        `Age : ${item.age}`
-                    }
-                </Text>
-
-                {/* gender */}
-                <Text>
-                    {
-                        `Gender : ${item.gender}`
-                    }
-                </Text>
-
-                {/* categories */}
-                <FlatList
-                    horizontal
-                    data={item.categories}
-                    renderItem={(item) => renderCategories(item)}
-                    keyExtractor={item => item.id}
-                />
-            </View>
+            <Carousel
+                // ref={(c) => { this._carousel = c; }}
+                data={tileData}
+                layout={'default'}
+                renderItem={renderTiles}
+                sliderWidth={windowWidth - 40}
+                itemWidth={windowWidth - 70}
+            />
         )
     }
 
-    // catecories
-    const renderCategories = ({ item, index }) => {
+    // render tiles 
+    const renderTiles = ({ item, index }) => {
 
         return (
-            <Text
-                style={Styles.categories}
+            <TouchableOpacity
+                onPress={() => {
+                    navigation.navigate('UserProfile', { data: item })
+                }}
             >
-                {
-                    item
-                }
-            </Text>
+                <View
+                    style={Styles.roundborder}
+                >
+                    <ImageBackground
+                        key={index}
+                        style={
+                            Styles.tileBox
+                        }
+                        resizeMode="cover"
+                        source={{ uri: item.profilePic }}
+                    >
+
+                        <View
+                            style={
+                                Styles.tileInnerContainer
+                            }
+                        >
+
+                            {/* render tags */}
+                            <View
+                                style={{ flexDirection: "row", alignItems: "flex-start", }}
+                            >
+                                {
+                                    item?.tags?.map(tag => {
+                                        return (
+                                            <Text
+                                                key={index}
+                                                style={Styles.tag}
+                                            >
+                                                {tag}
+                                            </Text>
+                                        )
+                                    })
+                                }
+                            </View>
+
+                            {/* title */}
+                            <Text
+                                style={Styles.title}
+                            >{item.title}</Text>
+
+                            {/* price */}
+                            <Text
+                                style={Styles.price}
+                            >{`$ ${item.price}`}</Text>
+
+                        </View>
+                    </ImageBackground>
+
+                </View>
+            </TouchableOpacity>
         )
     }
 
@@ -221,107 +133,41 @@ const Home = (props) => {
 
     return (
 
-        <View style={Styles.paddingContainer}>
+        <ScrollView>
+            <View
+                style={
+                    Styles.container
+                }
+            >
+                <View
+                    style={
+                        Styles.textWrapper
+                    }
+                >
 
-            {
-                isShowForm ?
+                    {/* title */}
+                    <Text style={Styles.fontLB}>Discover</Text>
+                    <Text style={Styles.fontLB}>A New World</Text>
 
-                    <React.Fragment>
-
-                        {
-                            //---------- add new profile form section 
-                        }
-
-                        <RegistrationFrom
-                            call_back={handleClicks}
-                        />
-
-                    </React.Fragment>
-                    :
-                    <React.Fragment>
-
-                        {
-                            //---------- filter section 
-                        }
-
-                        {/* filter selection button */}
-                        <TouchableOpacity
-                            style={Styles.borderButton}
-                            onPress={() => {
-
-                                handleClicks('drop_down')
-                            }}
-                        >
-                            <Text
-                                style={Styles.submitButtonTextWhite}
-                            >
-                                {
-                                    getSelectedFilter()
-                                }
-                            </Text>
-                        </TouchableOpacity>
-
-                        {/* filter modal */}
-                        <Modal
-                            visible={isShowFilter}
-                            transparent
-                            animationType="slid"
-                            onRequestClose={() => {
-                                setIsShowFilter(false);
-                            }}
-                        >
-                            <View
-                                style={Styles.modalContainer}>
-                                <View
-                                    style={Styles.modalStyle}
-                                >
-                                    {
-                                        renderFiltersList()
-                                    }
-                                </View>
-                            </View>
-                        </Modal>
+                    {/* search bar */}
+                    <InputField
+                        id={'search'}
+                        placeholder={'Search Places'}
+                        inputStyle={Styles.search}
+                        placeholderTextColor={'orange'}
+                        // lable={'Name'}
+                        // value={data.name || ''}
+                        onChange={handleChange}
+                    />
 
 
-                        {
-                            //---------- all profiles section
-                        }
-
-                        <FlatList
-                            data={(filterList.length > 0 || selectedFilter) ? filterList : usersList}
-                            renderItem={(item) => renderProfiles(item)}
-                            keyExtractor={item => item.id}
-                            ListEmptyComponent={() => {
-                                return (
-                                    <View
-                                        style={Styles.empty}
-                                    >
-                                        <Text>No profiles found ...</Text>
-                                    </View>
-                                )
-                            }}
-                        />
-
-                        {/* register new profile button */}
-                        <View
-                            style={Styles.floatBottom}
-                        >
-                            <TouchableOpacity
-                                style={Styles.blackButton}
-                                onPress={() => {
-
-                                    handleClicks('register')
-                                }}
-                            >
-                                <Text
-                                    style={Styles.submitButtonText}>
-                                    Register new profile
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </React.Fragment>
-            }
-        </View>
+                    {/* slider */}
+                    {
+                        renderCarousel()
+                    }
+                </View>
+            </View>
+        </ScrollView>
     );
 };
 
@@ -334,25 +180,45 @@ export default Home;
 
 //---------- static data
 
-const category_data = [
+// navigation.navigate('UserList')
+
+
+let tileData = [
     {
-        title: 'Food',
-        id: 'food',
+        id: 1,
+        title: 'cappacidia',
+        desc: 'Creating and maintaining this plugin has been a fun ride that started in 2016. We thank you all for your appreciation and for making the most out of it!',
+        tags: ['tag1', 'tag2'],
+        price: 26.00,
+        profilePic: 'https://picsum.photos/200/300',
+        profilePics: ['https://picsum.photos/id/237/200/300', 'https://picsum.photos/200/300.jpg'],
+        like: 3,
+        distance: 5,
+        time: '1 hr',
     },
     {
-        title: 'Sports',
-        id: 'sport',
+        id: 2,
+        title: 'cappacidia 1',
+        desc: 'Creating and maintaining this plugin has been a fun ride that started in 2016. We thank you all for your appreciation and for making the most out of it!',
+        tags: ['tag1', 'tag2'],
+        price: 49.00,
+        profilePic: 'https://picsum.photos/id/237/200/300',
+        profilePics: ['https://picsum.photos/seed/picsum/200/300', 'https://picsum.photos/200/300'],
+        like: 56,
+        distance: 10,
+        time: '2 min',
     },
     {
-        title: 'Music',
-        id: 'music',
-    },
-    {
-        title: 'Travel',
-        id: 'travel',
-    },
-    {
-        title: 'Clear All',
-        id: 'clear',
-    },
+        id: 3,
+        title: 'cappacidia 2',
+        desc: 'Creating and maintaining this plugin has been a fun ride that started in 2016. We thank you all for your appreciation and for making the most out of it!',
+        tags: ['tag1', 'tag2'],
+        price: 999.00,
+        profilePic: 'https://picsum.photos/seed/picsum/200/300',
+        profilePics: ['https://picsum.photos/200/300', 'https://picsum.photos/200/300?grayscale'],
+        like: 69,
+        distance: 11,
+        time: '10 min',
+    }
+
 ]

@@ -40,6 +40,7 @@ const TextInputField = (props) => {
                 style={
                     props.inputStyle || Styles.inputStyle
                 }
+                placeholderTextColor={props.placeholderTextColor || ''} 
                 onChangeText={(text) => {
                     props.onChange(text, props.id) || onChangeText(text)
                 }}
