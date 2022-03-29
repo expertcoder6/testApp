@@ -7,6 +7,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // components
 import Home from './src/Componets/Home'
+import UserList from './src/Componets/UserList'
+import UserProfile from './src/Componets/UserProfile'
+
 
 // global veriable
 const Stack = createNativeStackNavigator();
@@ -26,6 +29,19 @@ const App = () => {
           name="Home"
           component={Home}
         />
+
+
+        <Stack.Screen
+          name="UserList"
+          component={UserList}
+        />
+
+
+        <Stack.Screen
+          name="UserProfile"
+          component={UserProfile}
+        />
+
 
       </Stack.Navigator>
     </NavigationContainer>
